@@ -59,7 +59,7 @@ def mapped_zero2one(num):
 def favor(input):
     input = re.sub(re.compile(r"[a-zA-Z0-9]"), ";", input)
     words = BM(input)
-    print(words)
+    # print(words)
     score = judge(words)
-    print(score)
+    # print(score)
     return mapped_zero2one(score)
