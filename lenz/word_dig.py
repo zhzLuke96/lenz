@@ -72,7 +72,7 @@ def stop_word(_input):
     return re.sub(re.compile(r"[,./;':\"'<>\?\\\/!@#\$%\^&\*()~`\|，。、《》；‘：’“”【】\{\}\[\]！~·￥（）？\n 」「…『』◆×•®«»➊　]"), "", _input)
 
 
-def dig_words(text, max_size=2, min_entropy=1, min_count=10):
+def dig_words(text, max_size=2, min_entropy=1, min_count=10, fest_mode=False):
     text = stop_word(text)
     sp_o = spObj(text, max_size + 1)
     res = {}
@@ -84,8 +84,11 @@ def dig_words(text, max_size=2, min_entropy=1, min_count=10):
             _info = info(seq, sp_o)
             if _info < min_entropy:
                 continue
-            _l, _r = entropy(seq, sp_o)
-            res[seq] = c * (_info + _l + _r)
+            if fest_mode:
+                res[seq] = c * _info
+            else:
+                _l, _r = entropy(seq, sp_o)
+                res[seq] = c * (_info + _l + _r)
     return sorted(res.keys(), key=lambda x: res[x], reverse=True)
 
 
