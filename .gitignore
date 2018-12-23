@@ -105,3 +105,6 @@ venv.bak/
 
 # test txt file
 t*.txt
+
+# vscode
+.vscode

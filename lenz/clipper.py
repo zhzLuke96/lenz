@@ -1,5 +1,9 @@
 import re
-__all__ = ("BM",)
+__all__ = ("BM", )
+
+
+def judge_pure_english(keyword):
+    return all(ord(c) < 128 for c in keyword)
 
 
 def tans_n(seq):
@@ -52,7 +56,7 @@ def bmm(_input, maxlen=5, _dict={}):
     res = []
     cur = 0
     while cur < len(_input):
-        temp = _input[- (cur + maxlen): len(_input) - cur]
+        temp = _input[-(cur + maxlen):len(_input) - cur]
         for i in range(len(temp)):
             if len(temp) == 1:
                 res.append(temp)
@@ -78,7 +82,8 @@ def bmm(_input, maxlen=5, _dict={}):
 
 
 split_pattern = re.compile(
-    r"[,./;':\"'<>\?\\\/!@#\$%\^&\*()~`\|，。、《》；‘：’“”【】\{\}\[\]！~·￥（）？\n 」「…『』◆×•®«»➊　]")
+    r"[,./;':\"'<>\?\\\/!@#\$%\^&\*()~`\|，。、《》；‘：’“”【】\{\}\[\]！~·￥（）？\n 」「…『』◆×•®«»➊　]"
+)
 
 
 class BM:
@@ -90,7 +95,7 @@ class BM:
         with open(dictfile, "r", encoding="utf-8") as f:
             dict_arr = f.read().split("\n")
         for seq in dict_arr:
-            if(not len(seq) in self.dict.keys()):
+            if (not len(seq) in self.dict.keys()):
                 self.dict[len(seq)] = []
             self.dict[len(seq)].append(seq)
 
@@ -108,6 +113,8 @@ class BM:
                     continue
                 res += self(seq)
             return res
+        if judge_pure_english(text):
+            return [text]
         _fm = fmm(text, self.maxlen, self.dict)
         _bm = bmm(text, self.maxlen, self.dict)
         if len(_fm) == len(_bm):
@@ -146,62 +153,6 @@ class BM:
                 return _bm
             else:
                 return _fm
-
-#
-# def BM(_input, maxlen=5):
-#     """
-#     调用两种算法当结果完全相同则返回
-#     不同则选择词数少的一个
-#     若词数相同，选择单字最少
-#     """
-#     if split_pattern.search(_input):
-#         res = []
-#         seqs = re.split(split_pattern, _input)
-#         for seq in seqs:
-#             if len(seq) == 0:
-#                 continue
-#             res += BM(seq)
-#         return res
-#     _fm = fmm(_input, maxlen)
-#     _bm = bmm(_input, maxlen)
-#     # print("fmm:", _fm)
-#     # print("bmm:", _bm)
-#     if len(_fm) == len(_bm):
-#         fm_avg = 0
-#         bm_avg = 0
-#         for w in _fm:
-#             fm_avg += len(w)
-#         for w in _bm:
-#             bm_avg += len(w)
-#         fm_avg = fm_avg / len(_fm)
-#         bm_avg = bm_avg / len(_bm)
-#
-#         if fm_avg == bm_avg:
-#             # return _bm
-#             fm_var = 0
-#             bm_var = 0
-#             for w in _fm:
-#                 fm_var += len(w) - fm_avg
-#             for w in _bm:
-#                 bm_var += len(w) - bm_avg
-#             fm_var = fm_var * (1 / len(_fm))
-#             bm_var = bm_var * (1 / len(_bm))
-#             if fm_var == bm_var:
-#                 return _bm
-#             elif fm_var > bm_var:
-#                 return _bm
-#             else:
-#                 return _fm
-#         else:
-#             if fm_avg > bm_avg:
-#                 return _fm
-#             else:
-#                 return _bm
-#     else:
-#         if len(_fm) > len(_bm):
-#             return _bm
-#         else:
-#             return _fm
 
 
 if __name__ == '__main__':

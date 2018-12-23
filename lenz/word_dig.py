@@ -3,7 +3,7 @@
 from collections import Counter
 import math
 
-__all__ = ("dig_words",)
+__all__ = ("dig_words", )
 
 
 def words_split(_input, size=2):
@@ -12,12 +12,12 @@ def words_split(_input, size=2):
     while cur < len(_input):
         seq = _input[cur:cur + size]
         if len(seq) == size:
-            res.append(_input[cur:cur + size])
+            res.append(seq if isinstance(seq, str) else "".join(seq))
         cur += 1
     return res
 
 
-def spObj(text, maxsize=4):
+def split_Text(text, maxsize=4):
     res = {}
     for i in range(maxsize):
         s = words_split(text, i + 1)
@@ -40,6 +40,7 @@ def sub_seq(text):
 def info(_k, textObj):
     def _P(x):
         return textObj[len(x)][0][x] / len(textObj[len(x)][0])
+
     if len(_k) == 2:
         return math.log(_P(_k) / (_P(_k[0]) * _P(_k[1])), 2)
     subs = sub_seq(_k)
@@ -60,21 +61,29 @@ def entropy(_key, textObj):
     for seq, c in count.items():
         if seq[:len(_key)] == _key:
             p = c / count_len
-            re += (- p * math.log(p, 2))
+            re += (-p * math.log(p, 2))
         if seq[-len(_key):] == _key:
             p = c / count_len
-            le += (- p * math.log(p, 2))
+            le += (-p * math.log(p, 2))
     return le, re
 
 
-def stop_word(_input):
+def default_stop_word(_input):
     import re
-    return re.sub(re.compile(r"[,./;':\"'<>\?\\\/!@#\$%\^&\*()~`\|，。、《》；‘：’“”【】\{\}\[\]！~·￥（）？\n 」「…『』◆×•®«»➊　]"), "", _input)
+    return re.sub(
+        re.compile(
+            r"[,./;':\"'<>\?\\\/!@#\$%\^&\*()~`\|，。、《》；‘：’“”【】\{\}\[\]！~·￥（）？\n 」「…『』◆×•®«»➊　]"
+        ), "", _input)
 
 
-def dig_words(text, max_size=2, min_entropy=1, min_count=10, fest_mode=False):
-    text = stop_word(text)
-    sp_o = spObj(text, max_size + 1)
+def dig_words(_input,
+              max_size=2,
+              min_entropy=1,
+              min_count=10,
+              fest_mode=False,
+              stop_word=default_stop_word):
+    _input = _input if stop_word is None else stop_word(_input)
+    sp_o = split_Text(_input, max_size + 1)
     res = {}
     for i in range(2, max_size + 1):
         count, sarr = sp_o[i]
@@ -114,6 +123,7 @@ if __name__ == '__main__':
 
     def p_t(x):
         return 1 / ((d_t1.index(x) + 1) * (d_t2.index(x) + 1))
+
     for d in d_t1:
         if d in d_t2:
             res.append((p_t(d), d))
