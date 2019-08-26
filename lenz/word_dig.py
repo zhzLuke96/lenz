@@ -3,7 +3,7 @@
 from collections import Counter
 import math
 
-__all__ = ("dig_words", )
+__all__ = ("dig_words", "clear_knowWord")
 
 
 def words_split(_input, size=2):
@@ -75,13 +75,13 @@ def default_stop_word(_input):
             r"[,./;':\"'<>\?\\\/!@#\$%\^&\*()~`\|，。、《》；‘：’“”【】\{\}\[\]！~·￥（）？\n 」「…『』◆×•®«»➊　]"
         ), "", _input)
 
-
 def dig_words(_input,
               max_size=2,
               min_entropy=1,
               min_count=10,
               fest_mode=False,
-              stop_word=default_stop_word):
+              stop_word=default_stop_word,
+              cleared=False):
     _input = _input if stop_word is None else stop_word(_input)
     sp_o = split_Text(_input, max_size + 1)
     res = {}
@@ -98,8 +98,31 @@ def dig_words(_input,
             else:
                 _l, _r = entropy(seq, sp_o)
                 res[seq] = c * (_info + _l + _r)
-    return sorted(res.keys(), key=lambda x: res[x], reverse=True)
+    sorted_res = sorted(res.keys(), key=lambda x: res[x], reverse=True)
+    if cleared:
+        return claer_prefix(sorted_res)
+    else:
+        return sorted_res
 
+def claer_prefix(arr):
+    res = []
+    for i in arr:
+        for r in res:
+            if len(r) > len(i):
+                if r.find(i) != -1:
+                    break
+        else:
+            res.append(i)
+    return res
+
+def clear_knowWord(arr,dict_path):
+    ret = []
+    with open(dict_path, "r", encoding="utf-8") as f:
+        dict_arr = f.read().split("\n")
+        for w in arr:
+            if w not in dict_arr:
+                ret.append(w)
+    return ret
 
 if __name__ == '__main__':
     text = "出现多的组合就是词比如就是这个词就是一个很容易出现在中文句子中的词且它的左右词字都是非常不固定的那么他与其余二元词相比更有可能就是一个值得关注的词语"

@@ -5,9 +5,14 @@ from .clipper import BM
 __all__ = ("favor",)
 
 
-def mapped_zero2one(num):
-    return round(math.atan(num) / math.pi + 0.5, 3)
+# def mapped_zero2one(num):
+#     return round(math.atan(num) / math.pi + 0.5, 3)
 
+def sigmoid(x):
+    return 1/(1 + math.exp(-x))
+
+def sigmoid2(x):
+    return 2/(1 + math.exp(-x))-1
 
 class judge:
     def __init__(self, no_file, neg_file, pos_file, imp_file):
@@ -63,7 +68,7 @@ class favor:
 
     def __call__(self, words):
         score = self.judge(words)
-        return mapped_zero2one(score)
+        return round(sigmoid2(score),5)
 
 # def favor(input):
 #     input = re.sub(re.compile(r"[a-zA-Z0-9]"), ";", input)

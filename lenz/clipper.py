@@ -105,6 +105,7 @@ class BM:
         不同则选择词数少的一个
         若词数相同，选择单字最少
         """
+        if len(text.strip()) == 0:return []
         if split_pattern.search(text):
             res = []
             seqs = re.split(split_pattern, text)
